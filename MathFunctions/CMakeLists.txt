@@ -5,6 +5,10 @@
 # EXCLUDE_FROM_ALL: 这个库不会被默认构建,除非有其它组件依赖或手动构建
 add_library(MathFunctions EXCLUDE_FROM_ALL mysqrt.cxx)
 
+# !!这里表示外部链接到此库的话就不用再include_directories添加本库的include路径了
+target_include_directories(MathFunctions INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+
+# 以下是示例
 # SET(LIBHELLO_SRC hello.c)
 # ADD_LIBRARY(hello SHARED ${LIBHELLO_SRC})
 # ADD_LIBRARY(hello_static STATIC ${LIBHELLO_SRC})
