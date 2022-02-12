@@ -12,13 +12,33 @@ set(CMAKE_CXX_STANDARD 11)
 #如果CMAKE_CXX_STANDARD_REQUIRED设置为OFF则CMAKE_CXX_STANDARD指定版本的为首选版本，如果没有会使用上一版本。
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
+# option (<variable> "<help_text>" [value]) 选项
+# variable: 选项名; help_text: 描述/备注; value: 选项初始化值(除ON以外全为OFF)
+option(USE_MYMATH "Use tutorial provided math implementation" ON)
+
 configure_file(TutorialConfig.h.in TutorialConfig.h)
+
+if(USE_MYMATH)
+    # add_subdirectory (source_dir [binary_dir] [EXCLUDE_FROM_ALL]): 添加一个子目录并构建该子目录
+    # source_dir: 指定一个子目录, 子目录应该包含CMakeLists.txt文件和代码文件
+    # binary_dir: 用于存放子目录构建输出文件存放路径
+    # EXCLUDE_FROM_ALL: 若
+    # 加了add_subdirectory后就不用在target_include_directories了
+    add_subdirectory(MathFunctions)
+    list(APPEND EXTRA_LIBS MathFunctions)
+    list(APPEND EXTRA_INCLUDED "${PROJECT_SOURCE_DIR}/MathFunctions")
+endif()
 
 add_executable(Tutorial tutorial.cxx)
 
-message(STATUS "binary dir ${PROJECT_BINARY_DIR}")
+# PUBLIC/PRIVATE/INTERFACE的区别
+# PUBLIC: 如果目标的头文件包含了依赖的头文件(源文件简介包含), 那么就是PUBLIC
+# PRIVATE: 如果目标仅仅是源文件中包含了依赖的头文件, 那么就是PRIVATE
+# INTERFACE: 目标的头文件包含依赖, 但源文件未包含, 那么就是INTERFACE
+target_link_libraries(Tutorial PUBLIC ${EXTRA_LIBS})
 
 #为指定项目添加include路径
 target_include_directories(Tutorial PUBLIC
                           "${PROJECT_BINARY_DIR}"
+                          ${EXTRA_INCLUDED}
                           )
