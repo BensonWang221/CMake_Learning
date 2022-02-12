@@ -1,0 +1,6 @@
+// @VAR@将会被替换，如果VAR在CMakeLists中被定义的话
+// PROJECT_VERSION_MAJOR:
+// his variable holds the major version of the project as specified in the top level 
+// CMakeLists.txt file by a project() command.
+#define Tutorial_VERSION_MAJOR @Tutorial_VERSION_MAJOR@
+#define Tutorial_VERSION_MINOR @Tutorial_VERSION_MINOR@
