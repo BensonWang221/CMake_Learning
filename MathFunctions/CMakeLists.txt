@@ -5,9 +5,6 @@
 # EXCLUDE_FROM_ALL: 这个库不会被默认构建,除非有其它组件依赖或手动构建
 add_library(MathFunctions EXCLUDE_FROM_ALL mysqrt.cxx)
 
-# !!这里表示外部链接到此库的话就不用再include_directories添加本库的include路径了
-target_include_directories(MathFunctions INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
-
 # 以下是示例
 # SET(LIBHELLO_SRC hello.c)
 # ADD_LIBRARY(hello SHARED ${LIBHELLO_SRC})
@@ -17,3 +14,39 @@ target_include_directories(MathFunctions INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 # 重名会忽略第二条指令。
 # 解决办法:
 # SET_TARGET_PROPERTIES(hello_static PROPERTIES OUTPUT_NAME "hello")
+# !!这里表示外部链接到此库的话就不用再include_directories添加本库的include路径了
+
+target_include_directories(MathFunctions INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
+
+# checksymbolexists (SYMBOL FILES VARIABLE): 查找相关文件(FILES)
+# 里面是否包含相关符号(SYMBOL), 如果存在则设置VARIABLE为1
+# 需要在CMakeLists中包含CheckSymbolExists --> include (CheckSymbolExists)
+# If the symbol is a type, enum value, or intrinsic it will not be recognized 
+# (consider using CheckTypeSize or CheckCSourceCompiles)
+# If the check needs to be done in C++, consider using CheckCXXSymbolExists instead.
+include(CheckSymbolExists)
+# unset(<variable> PARENT_SCOPE)
+# PARENT_SCOPE: 清除时也带上PARENT_SCOPE
+# 如清除缓存变量时带上CACHE unset(<variable> CACHE)
+# 如清除环境变量 unset(ENV{<variable>})
+check_symbol_exists(log "math.h" HAVE_LOG)
+check_symbol_exists(exp "math.h" HAVE_EXP)
+if(NOT(HAVE_LOG AND HAVE_EXP))
+    unset(HAVE_LOG CACHE)
+    unset(HAVE_EXP CACHE)
+    # CMAKE_REQUIRED_LIBRARIES还不知道什么意思
+    set(CMAKE_REQUIRED_LIBRARIES "m")
+    check_symbol_exists(log "math.h" HAVE_LOG)
+    check_symbol_exists(exp "math.h" HAVE_EXP)
+    if(HAVE_EXP AND HAVE_LOG)
+        target_link_libraries(MathFunctions PRIVATE m)
+    endif()
+endif()
+
+if (HAVE_EXP AND HAVE_LOG)
+    # target_compile_definitions(<target>
+    #                            <INTERFACE|PUBLIC|PRIVATE> [items1 ...]
+    #                            <INTERFACE|PUBLIC|PRIVATE> [items2 ...])
+    # 下面这样使用的话, 就相当于在源代码中定义了这些宏
+    target_compile_definitions(MathFunctions PRIVATE "HAVE_LOG" "HAVE_EXP")
+endif()
