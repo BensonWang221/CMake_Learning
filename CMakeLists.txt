@@ -108,4 +108,5 @@ set(CPACK_SOURCE_GENERATOR "TGZ")
 # to specify generator, use the -G option; 
 # For multi-config builds, use -C to specify configuration
 # For example: cpack -G ZIP -C Debug
+# 运行cpack后会生成对应平台的package Darwin/Linux...
 include(CPack)
