@@ -85,3 +85,27 @@ do_test(Tutorial 7 "7 is 2.645")
 do_test(Tutorial 25 "25 is 5")
 do_test(Tutorial -25 "-25 is (-nan|nan|0)")
 do_test(Tutorial 0.0001 "0.0001 is 0.01")
+
+# InstallRequiredSystemLibraries
+# Include this module to search for
+# compiler-provided system runtime libraries and install rules for them
+# This module will include any runtime libraries that are needed by the project 
+# for the current platform
+include(InstallRequiredSystemLibraries)
+
+# set license file
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/License.txt")
+
+set(CPACK_PACKAGE_VERSION_MAJOR "${Tutorial_VERSION_MAJOR}")
+
+set(CPACK_PACKAGE_VERSION_MINOR "${Tutorial_VERSION_MINOR}")
+
+# CPACK_SOURCE_GENERATOR selects a file format for the source package
+# TGZ --> tar.gz
+set(CPACK_SOURCE_GENERATOR "TGZ")
+
+# cpack to run packaging
+# to specify generator, use the -G option; 
+# For multi-config builds, use -C to specify configuration
+# For example: cpack -G ZIP -C Debug
+include(CPack)
